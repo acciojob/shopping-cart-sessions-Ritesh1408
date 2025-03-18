@@ -12,82 +12,75 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// Function to render product list
-function renderProducts() {
-  productList.innerHTML = ""; 
-  products.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} 
-      <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
-    productList.appendChild(li);
-  });
+// Load cart from session storage
+let cart = JSON.parse(sessionStorage.getItem("cart"))||[];
 
-  // Add event listeners to buttons
-  document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-      const productId = parseInt(button.dataset.id);
-      addToCart(productId);
-    });
-  });
+//Render product List
+function renderProducts(){
+	productList.innerHTML ="";
+	products.forEach((product)=>{
+		const li = document.createElement("li");
+		li.innerHTML =`${product.name} - $${product.price}
+		<button class = "add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
+	productList.appendChild(li);
+		
+});
+	
+// Attach event listeners to "Add to Cart" buttons
+document.querySelectorAll(".add-to-cart-btn").forEach((button)=>{
+  button.addEventListener("click",()=>addToCart(parseInt(button.dataset.id)));
+});
+	
 }
-
-// Function to render cart
+// Render cart list
 function renderCart() {
-  cartList.innerHTML = ""; 
-  const cart = getCart();
-
-  cart.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} 
-      <button class="remove-from-cart-btn" data-id="${product.id}">Remove</button>`;
-    cartList.appendChild(li);
-  });
-
-  // Add event listeners to remove buttons
-  document.querySelectorAll(".remove-from-cart-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-      const productId = parseInt(button.dataset.id);
-      removeFromCart(productId);
+  cartList.innerHTML = ""; // **Ensure the cart is truly empty when no items exist**
+  
+  if (cart.length > 0) {
+    cart.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `${item.name} - $${item.price} 
+        <button class="remove-from-cart-btn" data-index="${index}">Remove</button>`;
+      cartList.appendChild(li);
     });
-  });
+// Attach event listeners to "Remove" buttons
+    document.querySelectorAll(".remove-from-cart-btn").forEach((button) => {
+      button.addEventListener("click", () => removeFromCart(parseInt(button.dataset.index)));
+    });
+  }
+
+  // Save cart to sessionStorage
+  sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function getCart() {
-  return JSON.parse(sessionStorage.getItem("cart")) || []; 
-}
-
-function saveCart(cart) {
-  sessionStorage.setItem("cart", JSON.stringify(cart)); 
-}
-
+// Add item to cart
 function addToCart(productId) {
-  let cart = getCart(); // Get current cart items
   const product = products.find((p) => p.id === productId);
-
   if (product) {
-    cart.push(product); 
-    saveCart(cart); 
-    renderCart(); 
+    cart.push(product);
+    renderCart();
   }
 }
 
-// Function to remove item from cart
-function removeFromCart(productId) {
-  let cart = getCart();
-  cart = cart.filter((item) => item.id !== productId);
-  saveCart(cart);
+// Remove item from cart
+function removeFromCart(index) {
+  cart.splice(index, 1);
   renderCart();
 }
 
-// Function to clear the cart
+// Clear cart
 function clearCart() {
-  sessionStorage.removeItem("cart");
+  cart = [];
   renderCart();
 }
 
-// Initial render on page load
-renderProducts();
-renderCart();
+// Event Listener for Clear Cart Button
+if (clearCartBtn) {
+  clearCartBtn.addEventListener("click", clearCart);
+}
 
-// Event listener for Clear Cart button
-clearCartBtn.addEventListener("click", clearCart);
+// Ensure the script runs only after the DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  renderCart();
+});
