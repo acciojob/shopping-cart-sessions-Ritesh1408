@@ -62,17 +62,17 @@ function saveCart(cart) {
   sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// Function to add item to cart
 function addToCart(productId) {
   let cart = getCart();
   const product = products.find((p) => p.id === productId);
 
   if (product) {
-    cart.push(product);
+    cart.push({ ...product }); 
     saveCart(cart);
     renderCart();
   }
 }
+
 
 // Function to remove item from cart
 function removeFromCart(productId) {
