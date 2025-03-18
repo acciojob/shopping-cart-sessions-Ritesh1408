@@ -14,7 +14,7 @@ const clearCartBtn = document.getElementById("clear-cart-btn");
 
 // Function to render product list
 function renderProducts() {
-  productList.innerHTML = ""; // Clear existing list
+  productList.innerHTML = ""; 
   products.forEach((product) => {
     const li = document.createElement("li");
     li.innerHTML = `${product.name} - $${product.price} 
@@ -33,7 +33,7 @@ function renderProducts() {
 
 // Function to render cart
 function renderCart() {
-  cartList.innerHTML = ""; // Clear existing list
+  cartList.innerHTML = ""; 
   const cart = getCart();
 
   cart.forEach((product) => {
@@ -52,27 +52,24 @@ function renderCart() {
   });
 }
 
-// Get cart from sessionStorage (or return an empty array if none)
 function getCart() {
-  return JSON.parse(sessionStorage.getItem("cart")) || [];
+  return JSON.parse(sessionStorage.getItem("cart")) || []; 
 }
 
-// Save cart to sessionStorage
 function saveCart(cart) {
-  sessionStorage.setItem("cart", JSON.stringify(cart));
+  sessionStorage.setItem("cart", JSON.stringify(cart)); 
 }
 
 function addToCart(productId) {
-  let cart = getCart();
+  let cart = getCart(); // Get current cart items
   const product = products.find((p) => p.id === productId);
 
   if (product) {
-    cart.push({ ...product }); 
-    saveCart(cart);
-    renderCart();
+    cart.push(product); 
+    saveCart(cart); 
+    renderCart(); 
   }
 }
-
 
 // Function to remove item from cart
 function removeFromCart(productId) {
